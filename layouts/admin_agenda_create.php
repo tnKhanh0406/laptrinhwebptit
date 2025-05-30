@@ -7,11 +7,6 @@ $message = '';
 $messageType = '';
 $seminar = null;
 
-if (!isset($_GET['seminar_id']) || !is_numeric($_GET['seminar_id'])) {
-  header('Location: ./admin_seminars.php');
-  exit;
-}
-
 $seminarId = (int)$_GET['seminar_id'];
 
 $stmt = $conn->prepare("SELECT * FROM seminars WHERE seminar_id = :seminar_id");
@@ -19,10 +14,6 @@ $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
 $stmt->execute();
 $seminar = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$seminar) {
-  header('Location: ./admin_seminars.php');
-  exit;
-}
 $userId = $_SESSION['user_id'];
 $speakerStmt = $conn->prepare("SELECT speaker_id, full_name FROM speakers WHERE status = 1 OR user_id = ? ORDER BY full_name");
 $speakerStmt->execute([$userId]); 
