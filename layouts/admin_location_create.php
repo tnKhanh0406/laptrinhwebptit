@@ -62,13 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt = $conn->prepare("
-        INSERT INTO locations (name, address, photo) 
-        VALUES (:name, :address, :photo)
+        INSERT INTO locations (name, address, photo, status, user_id) 
+        VALUES (:name, :address, :photo, :status, :user_id)
       ");
 
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':address', $address);
     $stmt->bindParam(':photo', $photoName);
+    $stmt->bindValue(':status', ($_SESSION['role'] === 'admin') ? 1 : 0); 
+    $stmt->bindValue(':user_id', $_SESSION['user_id']); 
 
     $stmt->execute();
 
@@ -76,8 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $messageType = "success";
 
     $name = $address = '';
-
-    header('refresh:1.5;url=./admin_locations.php');
   } else {
     $message = implode("<br>", $errors);
     $messageType = "danger";
@@ -100,9 +100,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-5 mb-5' : 'content'; ?>">
     <h1 class="mb-4">Thêm Địa điểm Mới</h1>
 
     <?php if (!empty($message)): ?>
@@ -153,6 +158,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </div>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './footer.php';
+  } ?>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>

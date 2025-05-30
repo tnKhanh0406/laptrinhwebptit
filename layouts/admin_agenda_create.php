@@ -23,8 +23,9 @@ if (!$seminar) {
   header('Location: ./admin_seminars.php');
   exit;
 }
-
-$speakerStmt = $conn->query("SELECT speaker_id, full_name FROM speakers ORDER BY full_name");
+$userId = $_SESSION['user_id'];
+$speakerStmt = $conn->prepare("SELECT speaker_id, full_name FROM speakers WHERE status = 1 OR user_id = ? ORDER BY full_name");
+$speakerStmt->execute([$userId]); 
 $speakers = $speakerStmt->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -79,8 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title = $startTime = $endTime = $description = '';
     $speakerId = null;
-
-    header('refresh:1.5;url=./admin_seminars.php');
   }
 } else {
   $messageType = "danger";
@@ -99,13 +98,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="../assets/css/style-admin.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <title>Thêm Chương Trình - Admin</title>
+  <title>Thêm Chương Trình</title>
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-5 mb-5' : 'content'; ?>">
     <h1 class="mb-4">Thêm Chương Trình</h1>
 
     <?php if (!empty($message)): ?>
@@ -164,6 +168,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </option>
               <?php endforeach; ?>
             </select>
+            <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
+                  <div class="input-group-append mt-3">
+                    <a href="./admin_speaker_create.php" class="btn btn-outline-secondary">
+                      <i class="fas fa-plus"></i> Thêm diễn giả
+                    </a>
+                  </div>
+                <?php endif; ?>
           </div>
 
           <div class="row">
@@ -204,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-save"></i> Lưu
             </button>
-            <a href="./admin_seminars.php" class="btn btn-secondary ml-2">
+            <a href="./admin_seminar_view.php?id=<?php echo $seminarId; ?>" class="btn btn-secondary ml-2">
               <i class="fas fa-arrow-left"></i> Quay lại
             </a>
           </div>
@@ -212,6 +223,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </div>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './footer.php';
+  } ?>
 
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

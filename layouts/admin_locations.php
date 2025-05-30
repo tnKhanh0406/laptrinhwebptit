@@ -1,18 +1,13 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header('Location: ../index.php');
-  exit;
-}
-
 require_once '../config.php';
 
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
   try {
     $locationId = (int)$_GET['id'];
     
-    $checkStmt = $conn->prepare("SELECT COUNT(*) FROM seminars WHERE location_id = :location_id");
+    $checkStmt = $conn->prepare("SELECT COUNT(*) FROM seminars WHERE location_id = :location_id AND status = 1");
     $checkStmt->bindParam(':location_id', $locationId, PDO::PARAM_INT);
     $checkStmt->execute();
     
@@ -20,7 +15,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
       $deleteMessage = "Không thể xóa địa điểm này vì đang được sử dụng trong các hội thảo!";
       $deleteStatus = "danger";
     } else {
-      $photoStmt = $conn->prepare("SELECT photo FROM locations WHERE location_id = :location_id");
+      $photoStmt = $conn->prepare("SELECT photo FROM locations WHERE location_id = :location_id AND status = 1");
       $photoStmt->bindParam(':location_id', $locationId, PDO::PARAM_INT);
       $photoStmt->execute();
       $photo = $photoStmt->fetchColumn();
@@ -53,17 +48,17 @@ try {
   $limit = 10; 
   $offset = ($currentPage - 1) * $limit;
   
-  $countStmt = $conn->query("SELECT COUNT(*) FROM locations");
+  $countStmt = $conn->query("SELECT COUNT(*) FROM locations WHERE status = 1");
   $totalLocations = $countStmt->fetchColumn();
   $totalPages = ceil($totalLocations / $limit);
   
   $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-  $whereClause = "";
+  $whereClause = "WHERE status = 1";
   
   if (!empty($search)) {
-    $whereClause = "WHERE name LIKE :search OR address LIKE :search";
+    $whereClause .= " AND (name LIKE :search OR address LIKE :search)";
     $searchTerm = "%{$search}%";
-  }
+}
   
   $countSql = "SELECT COUNT(*) FROM locations " . $whereClause;
   

@@ -75,7 +75,7 @@
 
   $offset = ($currentPage - 1) * $itemsPerPage;
 
-  $countStmt = $conn->query("SELECT COUNT(*) as total FROM speakers");
+  $countStmt = $conn->query("SELECT COUNT(*) as total FROM speakers WHERE status = 1");
   $totalItems = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
   $totalPages = ceil($totalItems / $itemsPerPage);
 
@@ -84,7 +84,7 @@
     $offset = ($currentPage - 1) * $itemsPerPage;
   }
 
-  $stmt = $conn->prepare("SELECT * FROM speakers LIMIT :limit OFFSET :offset");
+  $stmt = $conn->prepare("SELECT * FROM speakers WHERE status = 1 LIMIT :limit OFFSET :offset");
   $stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
   $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
   $stmt->execute();

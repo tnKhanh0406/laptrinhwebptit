@@ -121,213 +121,11 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css"
     integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
   <link rel="stylesheet" href="../assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/seminar_detail.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <title><?php echo htmlspecialchars($seminar['topic']); ?></title>
-  <style>
-    .seminar-detail {
-      max-width: 1000px;
-      margin: 50px auto;
-      padding: 30px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .seminar-image {
-      width: 100%;
-      height: 350px;
-      object-fit: cover;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .seminar-info {
-      margin-bottom: 30px;
-    }
-
-    .seminar-title {
-      color: #1a2a6c;
-      margin-bottom: 20px;
-      font-size: 28px;
-      font-weight: 600;
-      position: relative;
-      padding-bottom: 15px;
-    }
-
-    .seminar-title::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 50px;
-      height: 3px;
-      background: #1a2a6c;
-    }
-
-    .badge-status {
-      padding: 8px 16px;
-      font-size: 14px;
-      margin-left: 15px;
-    }
-
-    .details-container {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .details-container h4 {
-      color: #1a2a6c;
-      margin-bottom: 15px;
-      font-size: 20px;
-    }
-
-    .registration-info {
-      padding: 15px;
-      background-color: #e9ecef;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .speaker-card {
-      padding: 15px;
-      border-radius: 8px;
-      background: #f8f9fa;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-    }
-
-    .speaker-img {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 15px;
-    }
-
-    .speaker-info {
-      flex-grow: 1;
-    }
-
-    .speaker-name {
-      color: #1a2a6c;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-
-    .speaker-bio {
-      color: #333;
-      font-size: 14px;
-      margin-bottom: 0;
-    }
-
-    .back-btn {
-      margin-top: 30px;
-    }
-
-    /* Timeline Style for Agenda */
-    .agenda-timeline {
-      position: relative;
-      padding-left: 30px;
-      margin-top: 20px;
-    }
-
-    .agenda-timeline::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      background-color: #1a2a6c;
-      border-radius: 5px;
-    }
-
-    .agenda-item {
-      position: relative;
-      margin-bottom: 25px;
-      padding-bottom: 15px;
-      border-bottom: 1px dashed #dee2e6;
-    }
-
-    .agenda-item:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-      border-bottom: none;
-    }
-
-    .agenda-item::before {
-      content: "";
-      position: absolute;
-      left: -37px;
-      top: 5px;
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      background-color: #fff;
-      border: 3px solid #1a2a6c;
-      z-index: 1;
-    }
-
-    .agenda-time {
-      font-weight: 600;
-      color: #1a2a6c;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-    }
-
-    .agenda-title {
-      font-size: 1.1rem;
-      margin-bottom: 10px;
-      color: #444;
-    }
-
-    .agenda-speaker {
-      display: flex;
-      align-items: center;
-      margin: 10px 0;
-    }
-
-    .agenda-speaker-img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      margin-right: 10px;
-      object-fit: cover;
-    }
-
-    .agenda-speaker span {
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .agenda-speaker a {
-      color: #1a2a6c;
-      font-weight: 600;
-    }
-
-    .agenda-description {
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 10px;
-      line-height: 1.5;
-    }
-
-    /* Khi hover lên mỗi agenda item */
-    .agenda-item:hover::before {
-      background-color: #1a2a6c;
-      transform: scale(1.2);
-      transition: all 0.2s ease;
-    }
-
-    .agenda-item:hover .agenda-title {
-      color: #1a2a6c;
-    }
-  </style>
 </head>
 
 <body>
@@ -357,7 +155,7 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
                 ?>
               </p>
               <p><strong><i class="fas fa-map-marker-alt"></i> Địa điểm:</strong>
-                <?php echo !empty($location) ? htmlspecialchars($location['name'] . ', ' . $location['address']) : 'Không có thông tin'; ?>
+                <?php htmlspecialchars($location['name'] . ', ' . $location['address']); ?>
               </p>
               <p><strong><i class="fas fa-tag"></i> Phân loại:</strong>
                 <?php echo htmlspecialchars($seminar['category']); ?>
@@ -367,8 +165,7 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
               </p>
 
               <?php if (!empty($seminar['description'])): ?>
-                <hr>
-                <h4>Mô tả hội thảo</h4>
+                <hr><h4>Mô tả hội thảo</h4>
                 <p><?php echo nl2br(htmlspecialchars($seminar['description'])); ?></p>
               <?php endif; ?>
             </div>
@@ -377,7 +174,6 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
           <div class="col-md-4">
             <div class="details-container">
               <h4>Đăng ký tham gia</h4>
-
               <?php if ($status === 'past'): ?>
                 <div class="alert alert-secondary text-center">
                   Hội thảo đã kết thúc

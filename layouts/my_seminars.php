@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../config.php';
 $user_id = $_SESSION['user_id'];
 
 $stmt = $conn->prepare("
@@ -9,7 +9,7 @@ $stmt = $conn->prepare("
         FROM seminars s
         LEFT JOIN locations l ON s.location_id = l.location_id
         WHERE s.user_id = ?
-        ORDER BY s.created_at DESC
+        ORDER BY s.start_time DESC
     ");
 $stmt->execute([$user_id]);
 $seminars = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -17,36 +17,26 @@ $seminars = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
   $seminarId = (int)$_POST['seminar_id'];
 
-  try {
-    $checkStmt = $conn->prepare("
+  $checkStmt = $conn->prepare("
             SELECT seminar_id, status FROM seminars 
             WHERE seminar_id = ? AND user_id = ?
         ");
-    $checkStmt->execute([$seminarId, $user_id]);
-    $seminar = $checkStmt->fetch(PDO::FETCH_ASSOC);
+  $checkStmt->execute([$seminarId, $user_id]);
+  $seminar = $checkStmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($seminar && $seminar['status'] == 0) {
-      $conn->beginTransaction();
+  if ($seminar && $seminar['status'] == 0) {
+    $deleteAgendaStmt = $conn->prepare("DELETE FROM agenda WHERE seminar_id = ?");
+    $deleteAgendaStmt->execute([$seminarId]);
 
-      $deleteAgendaStmt = $conn->prepare("DELETE FROM agenda WHERE seminar_id = ?");
-      $deleteAgendaStmt->execute([$seminarId]);
+    $deleteSeminarStmt = $conn->prepare("DELETE FROM seminars WHERE seminar_id = ?");
+    $deleteSeminarStmt->execute([$seminarId]);
 
-      $deleteSeminarStmt = $conn->prepare("DELETE FROM seminars WHERE seminar_id = ?");
-      $deleteSeminarStmt->execute([$seminarId]);
-
-      $conn->commit();
-
-      $_SESSION['message'] = "Đã xóa hội thảo thành công.";
-      $_SESSION['message_type'] = "success";
-      header('Location: my_seminars_created.php');
-      exit;
-    } else {
-      $_SESSION['message'] = "Không thể xóa hội thảo này. Có thể hội thảo đã được duyệt hoặc không tồn tại.";
-      $_SESSION['message_type'] = "danger";
-    }
-  } catch (PDOException $e) {
-    $conn->rollBack();
-    $_SESSION['message'] = "Lỗi khi xóa hội thảo: " . $e->getMessage();
+    $_SESSION['message'] = "Đã xóa hội thảo thành công.";
+    $_SESSION['message_type'] = "success";
+    header('Location: my_seminars.php');
+    exit;
+  } else {
+    $_SESSION['message'] = "Không thể xóa hội thảo này. Có thể hội thảo đã được duyệt hoặc không tồn tại.";
     $_SESSION['message_type'] = "danger";
   }
 }
@@ -62,7 +52,7 @@ if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
   <title>Hội thảo đã đề xuất</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     .status-badge {
@@ -101,7 +91,7 @@ if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
         </h1>
       </div>
       <div class="col-md-6 text-right">
-        <a href="seminar_create.php" class="btn btn-primary">
+        <a href="admin_seminar_create.php" class="btn btn-primary">
           <i class="fas fa-plus-circle"></i> Tạo hội thảo mới
         </a>
       </div>
@@ -125,9 +115,9 @@ if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
     <?php endif; ?>
 
     <?php if (empty($seminars)): ?>
-      <div class="alert alert-info">
+      <div class="alert alert-info" style="margin-bottom: 310px;">
         <i class="fas fa-info-circle"></i> Bạn chưa đề xuất hội thảo nào.
-        <a href="seminar_create.php" class="btn btn-info btn-sm ml-3">Tạo hội thảo mới</a>
+        <a href="admin_seminar_create.php" class="btn btn-info btn-sm ml-3">Tạo hội thảo mới</a>
       </div>
     <?php else: ?>
       <div class="row">
@@ -141,7 +131,7 @@ if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
               <?php endif; ?>
 
               <?php if (!empty($seminar['photo'])): ?>
-                <img src="assets/images/<?php echo htmlspecialchars($seminar['photo']); ?>" class="card-img-top seminar-img" alt="<?php echo htmlspecialchars($seminar['topic']); ?>">
+                <img src="../assets/images/<?php echo htmlspecialchars($seminar['photo']); ?>" class="card-img-top seminar-img" alt="<?php echo htmlspecialchars($seminar['topic']); ?>">
               <?php else: ?>
                 <img src="assets/images/default-seminar.jpg" class="card-img-top seminar-img" alt="Default seminar image">
               <?php endif; ?>
@@ -171,12 +161,12 @@ if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
                 <?php endif; ?>
 
                 <div class="mt-3">
-                  <a href="seminar_created_view.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-primary btn-sm">
+                  <a href="./admin_seminar_view.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-primary btn-sm">
                     <i class="fas fa-info-circle"></i> Chi tiết
                   </a>
 
                   <?php if ($seminar['status'] == 0): ?>
-                    <a href="seminar_edit.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-outline-primary btn-sm">
+                    <a href="./admin_seminar_edit.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-outline-primary btn-sm">
                       <i class="fas fa-edit"></i> Sửa
                     </a>
 
@@ -186,12 +176,6 @@ if (isset($_POST['delete_seminar']) && isset($_POST['seminar_id'])) {
                   <?php endif; ?>
                 </div>
               </div>
-
-              <?php if (isset($seminar['created_at'])): ?>
-                <div class="card-footer text-muted small">
-                  <i class="fas fa-calendar-plus"></i> Đề xuất: <?php echo date('d/m/Y H:i', strtotime($seminar['created_at'])); ?>
-                </div>
-              <?php endif; ?>
             </div>
 
             <!-- Modal xác nhận xóa -->

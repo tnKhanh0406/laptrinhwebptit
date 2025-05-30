@@ -2,11 +2,6 @@
 session_start();
 require_once '../config.php';
 
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-  header('Location: ./admin_speakers.php');
-  exit;
-}
-
 $speakerId = (int)$_GET['id'];
 
 $stmt = $conn->prepare("SELECT * FROM speakers WHERE speaker_id = :speaker_id");
@@ -62,64 +57,22 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="card-body">
           <div class="row">
             <div class="col-md-4 text-center">
-              <?php if (!empty($speaker['photo']) && file_exists("../assets/images/" . $speaker['photo'])): ?>
-                <img src="../assets/images/<?php echo htmlspecialchars($speaker['photo']); ?>"
-                  alt="<?php echo htmlspecialchars($speaker['full_name']); ?>"
-                  class="img-fluid rounded mb-3" style="max-height: 300px;">
-              <?php else: ?>
-                <img src="../assets/images/default-speaker.jpg"
-                  alt="Default speaker image"
-                  class="img-fluid rounded mb-3" style="max-height: 300px;">
-              <?php endif; ?>
+              <img src="../assets/images/<?php echo htmlspecialchars($speaker['photo']); ?>"
+                alt="<?php echo htmlspecialchars($speaker['full_name']); ?>"
+                class="img-fluid rounded mb-3" style="max-height: 300px;">
             </div>
-
             <div class="col-md-8">
               <h2><?php echo htmlspecialchars($speaker['full_name']); ?></h2>
 
               <div class="mb-3">
                 <h5>Tiểu sử:</h5>
-                <p><?php echo !empty($speaker['bio']) ? nl2br(htmlspecialchars($speaker['bio'])) : 'Chưa cập nhật'; ?></p>
+                <p><?php echo htmlspecialchars($speaker['bio']); ?></p>
               </div>
 
               <div class="mb-3">
                 <h5>Mô tả:</h5>
-                <p><?php echo !empty($speaker['description']) ? nl2br(htmlspecialchars($speaker['description'])) : 'Chưa cập nhật'; ?></p>
+                <p><?php echo htmlspecialchars($speaker['description']); ?></p>
               </div>
-
-              <?php if (!empty($speaker['company'])): ?>
-                <div class="mb-3">
-                  <h5>Công ty:</h5>
-                  <p><?php echo htmlspecialchars($speaker['company']); ?></p>
-                </div>
-              <?php endif; ?>
-
-              <?php if (!empty($speaker['position'])): ?>
-                <div class="mb-3">
-                  <h5>Chức vụ:</h5>
-                  <p><?php echo htmlspecialchars($speaker['position']); ?></p>
-                </div>
-              <?php endif; ?>
-
-              <?php if (!empty($speaker['email'])): ?>
-                <div class="mb-3">
-                  <h5>Email:</h5>
-                  <p><a href="mailto:<?php echo htmlspecialchars($speaker['email']); ?>"><?php echo htmlspecialchars($speaker['email']); ?></a></p>
-                </div>
-              <?php endif; ?>
-
-              <?php if (!empty($speaker['phone'])): ?>
-                <div class="mb-3">
-                  <h5>Điện thoại:</h5>
-                  <p><?php echo htmlspecialchars($speaker['phone']); ?></p>
-                </div>
-              <?php endif; ?>
-
-              <?php if (!empty($speaker['website'])): ?>
-                <div class="mb-3">
-                  <h5>Website:</h5>
-                  <p><a href="<?php echo htmlspecialchars($speaker['website']); ?>" target="_blank"><?php echo htmlspecialchars($speaker['website']); ?></a></p>
-                </div>
-              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -163,7 +116,7 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
                         ?>
                       </td>
                       <td>
-                        <?php echo !empty($item['location_name']) ? htmlspecialchars($item['location_name']) : '<span class="text-muted">Chưa cập nhật</span>'; ?>
+                        <?php echo htmlspecialchars($item['location_name']); ?>
                       </td>
                     </tr>
                   <?php endforeach; ?>
@@ -183,5 +136,4 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
 </body>
-
 </html>

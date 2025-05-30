@@ -101,8 +101,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $agenda['start_time'] = $startTime;
     $agenda['end_time'] = $endTime;
     $agenda['description'] = $description;
-
-    header('refresh:1.5;url=./admin_seminars.php');
   } else {
     $message = implode("<br>", $errors);
     $messageType = "danger";
@@ -125,9 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-5 mb-5' : 'content'; ?>">
     <h1 class="mb-4">Chỉnh sửa Chương trình</h1>
 
     <?php if (!empty($message)): ?>
@@ -230,6 +233,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </div>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './footer.php';
+  } ?>
 
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

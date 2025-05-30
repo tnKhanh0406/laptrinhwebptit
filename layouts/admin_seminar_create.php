@@ -8,11 +8,12 @@ $messageType = '';
 
 $targetDir = "../assets/images/";
 
-$locationStmt = $conn->query("SELECT location_id, name FROM locations ORDER BY name");
+$userId = $_SESSION['user_id'];
+$locationStmt = $conn->prepare("SELECT location_id, name, status FROM locations WHERE status = 1 OR user_id = ? ORDER BY status DESC, name ASC");
+$locationStmt->execute([$userId]);
 $locations = $locationStmt->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  // Lấy dữ liệu đầu vào
   $topic = trim($_POST['topic'] ?? '');
   $content = trim($_POST['content'] ?? '');
   $startTime = $_POST['start_time'] ?? '';
@@ -23,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $errors = [];
 
-  // Kiểm tra dữ liệu
   if (empty($topic)) {
     $errors[] = "Chủ đề không được để trống";
   }
@@ -46,9 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors[] = "Danh mục không được để trống";
   }
 
-  // Xử lý tải lên hình ảnh
   $photoPath = null;
-  $photoName = null;  // Chỉ lưu tên ảnh, không lưu đường dẫn
+  $photoName = null;
   if (isset($_FILES["photo"]) && $_FILES["photo"]["error"] == 0) {
     $allowed = ["jpg" => "image/jpg", "jpeg" => "image/jpeg", "gif" => "image/gif", "png" => "image/png"];
     $filename = $_FILES["photo"]["name"];
@@ -90,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $stmt = $conn->prepare("
-        INSERT INTO seminars (topic, content, start_time, end_time, location_id, max_participants, category, photo) 
-        VALUES (:topic, :content, :start_time, :end_time, :location_id, :max_participants, :category, :photo)
+        INSERT INTO seminars (topic, content, start_time, end_time, location_id, max_participants, category, photo, status, user_id) 
+        VALUES (:topic, :content, :start_time, :end_time, :location_id, :max_participants, :category, :photo, :status, :user_id)
       ");
 
     $stmt->bindParam(':topic', $topic);
@@ -101,19 +100,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bindParam(':location_id', $locationId, PDO::PARAM_INT);
     $stmt->bindParam(':max_participants', $maxParticipants, PDO::PARAM_INT);
     $stmt->bindParam(':category', $category);
-    $stmt->bindParam(':photo', $photoName);  // Bây giờ chỉ lưu tên file
+    $stmt->bindParam(':photo', $photoName);
+    $stmt->bindValue(':status', ($_SESSION['role'] === 'admin') ? 1 : 0);
+    $stmt->bindValue(':user_id', $_SESSION['user_id']);
 
     $stmt->execute();
 
     $message = "Hội thảo đã được tạo thành công!";
     $messageType = "success";
 
-    // Reset form
     $topic = $content = $startTime = $endTime = $category = '';
     $locationId = $maxParticipants = null;
-
-    // Chuyển hướng sau 1.5 giây
-    header('refresh:1.5;url=./admin_seminars.php');
   } else {
     $message = implode("<br>", $errors);
     $messageType = "danger";
@@ -136,9 +133,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-4 mb-4' : 'content'; ?>">
     <h1 class="mb-4">Thêm Hội Thảo Mới</h1>
 
     <?php if (!empty($message)): ?>
@@ -215,6 +217,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </option>
                   <?php endforeach; ?>
                 </select>
+                <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
+                  <div class="input-group-append mt-3">
+                    <a href="./admin_location_create.php" class="btn btn-outline-secondary">
+                      <i class="fas fa-plus"></i> Thêm địa điểm
+                    </a>
+                  </div>
+                <?php endif; ?>
               </div>
             </div>
             <div class="col-md-6">
@@ -226,26 +235,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   value="<?php echo htmlspecialchars($maxParticipants ?? ''); ?>">
               </div>
             </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="category">
+                  <i class="fas fa-tag"></i> Danh mục <span class="text-danger">*</span>
+                </label>
+                <input type="text" class="form-control" id="category" name="category" required
+                  value="<?php echo htmlspecialchars($category ?? ''); ?>">
+              </div>
+            </div>
           </div>
-
-          <div class="form-group">
-            <label for="category">
-              <i class="fas fa-tag"></i> Danh mục <span class="text-danger">*</span>
-            </label>
-            <input type="text" class="form-control" id="category" name="category" required
-              value="<?php echo htmlspecialchars($category ?? ''); ?>">
-            <small class="form-text text-muted">Ví dụ: Công nghệ, Giáo dục, Việc làm, Gây quỹ, v.v.</small>
-          </div>
-
           <div class="form-group">
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-save"></i> Lưu
             </button>
           </div>
+
         </form>
       </div>
     </div>
   </div>
+
+  <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
+    <?php include_once './footer.php'; ?>
+  <?php endif; ?>
 
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

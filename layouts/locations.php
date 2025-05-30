@@ -78,7 +78,7 @@
 
   $offset = ($currentPage - 1) * $itemsPerPage;
 
-  $countStmt = $conn->query("SELECT COUNT(*) as total FROM locations");
+  $countStmt = $conn->query("SELECT COUNT(*) as total FROM locations WHERE status = 1");
   $totalItems = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
   $totalPages = ceil($totalItems / $itemsPerPage);
 
@@ -87,7 +87,7 @@
     $offset = ($currentPage - 1) * $itemsPerPage;
   }
 
-  $stmt = $conn->prepare("SELECT * FROM locations LIMIT :limit OFFSET :offset");
+  $stmt = $conn->prepare("SELECT * FROM locations WHERE status = 1 LIMIT :limit OFFSET :offset");
   $stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
   $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
   $stmt->execute();

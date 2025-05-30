@@ -9,19 +9,19 @@ $messageType = '';
 if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
   try {
     $seminarId = (int)$_GET['id'];
-    
+
     $stmt = $conn->prepare("DELETE FROM agenda WHERE seminar_id = :seminar_id");
     $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
     $stmt->execute();
-    
+
     $stmt = $conn->prepare("DELETE FROM registrations WHERE seminar_id = :seminar_id");
     $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
     $stmt->execute();
-    
+
     $stmt = $conn->prepare("DELETE FROM seminars WHERE seminar_id = :seminar_id");
     $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
     $stmt->execute();
-    
+
     if ($stmt->rowCount() > 0) {
       $message = "Đã xóa hội thảo và dữ liệu liên quan thành công!";
       $messageType = "success";
@@ -35,74 +35,72 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
   }
 }
 
-try {
-  $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-  $limit = 10;
-  $offset = ($currentPage - 1) * $limit;
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$limit = 10;
+$offset = ($currentPage - 1) * $limit;
 
-  $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-  $category = isset($_GET['category']) ? trim($_GET['category']) : '';
-  $whereClause = [];
-  $params = [];
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$category = isset($_GET['category']) ? trim($_GET['category']) : '';
+$whereClause = [];
+$params = [];
 
-  if (!empty($search)) {
-    $whereClause[] = "(s.topic LIKE :search)";
-    $params[':search'] = "%{$search}%";
-  }
+$whereClause[] = "s.status = 1";
 
-  if (!empty($category)) {
-    $whereClause[] = "(s.category = :category)";
-    $params[':category'] = $category;
-  }
+if (!empty($search)) {
+  $whereClause[] = "(s.topic LIKE :search)";
+  $params[':search'] = "%{$search}%";
+}
 
-  $sqlWhere = !empty($whereClause) ? " WHERE " . implode(" AND ", $whereClause) : "";
+if (!empty($category)) {
+  $whereClause[] = "(s.category = :category)";
+  $params[':category'] = $category;
+}
 
-  $countSql = "SELECT COUNT(*) FROM seminars s" . $sqlWhere;
-  if (!empty($params)) {
-    $countStmt = $conn->prepare($countSql);
-    $countStmt->execute($params);
-  } else {
-    $countStmt = $conn->query($countSql);
-  }
-  $totalSeminars = $countStmt->fetchColumn();
-  $totalPages = ceil($totalSeminars / $limit);
+$sqlWhere = !empty($whereClause) ? " WHERE " . implode(" AND ", $whereClause) : "";
 
-  $sql = "SELECT s.seminar_id, s.topic, s.start_time, s.end_time, 
+$countSql = "SELECT COUNT(*) FROM seminars s WHERE s.status = 1" . 
+            (!empty($whereClause) ? " AND " . implode(" AND ", $whereClause) : "");
+
+if (!empty($params)) {
+  $countStmt = $conn->prepare($countSql);
+  $countStmt->execute($params);
+} else {
+  $countStmt = $conn->query($countSql);
+}
+$totalSeminars = $countStmt->fetchColumn();
+$totalPages = ceil($totalSeminars / $limit);
+
+$sql = "SELECT s.seminar_id, s.topic, s.start_time, s.end_time, 
           s.max_participants, s.category, l.name as location_name 
           FROM seminars s 
-          LEFT JOIN locations l ON s.location_id = l.location_id" 
-          . $sqlWhere . 
-          " ORDER BY s.start_time DESC LIMIT :limit OFFSET :offset";
+          LEFT JOIN locations l ON s.location_id = l.location_id
+          WHERE s.status = 1" .
+        (!empty($whereClause) ? " AND " . implode(" AND ", $whereClause) : "") .
+        " ORDER BY s.start_time DESC LIMIT :limit OFFSET :offset";
+        
+$stmt = $conn->prepare($sql);
 
-  $stmt = $conn->prepare($sql);
-  
-  foreach ($params as $key => $value) {
-    $stmt->bindValue($key, $value);
-  }
-  
-  $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
-  $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
-  $stmt->execute();
-  $seminars = $stmt->fetchAll(PDO::FETCH_ASSOC);
+foreach ($params as $key => $value) {
+  $stmt->bindValue($key, $value);
+}
 
-  foreach ($seminars as &$seminar) {
-    $agendaSql = "SELECT a.agenda_id, a.title, a.start_time, a.end_time, 
+$stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
+$stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+$seminars = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+foreach ($seminars as &$seminar) {
+  $agendaSql = "SELECT a.agenda_id, a.title, a.start_time, a.end_time, 
                  s.full_name as speaker_name 
                  FROM agenda a 
                  LEFT JOIN speakers s ON a.speaker_id = s.speaker_id 
                  WHERE a.seminar_id = :seminar_id 
                  ORDER BY a.start_time ASC";
-    
-    $agendaStmt = $conn->prepare($agendaSql);
-    $agendaStmt->bindParam(':seminar_id', $seminar['seminar_id'], PDO::PARAM_INT);
-    $agendaStmt->execute();
-    $seminar['agendas'] = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
-  }
-  
-} catch (PDOException $e) {
-  $message = "Lỗi khi lấy dữ liệu: " . $e->getMessage();
-  $messageType = "danger";
-  $seminars = [];
+
+  $agendaStmt = $conn->prepare($agendaSql);
+  $agendaStmt->bindParam(':seminar_id', $seminar['seminar_id'], PDO::PARAM_INT);
+  $agendaStmt->execute();
+  $seminar['agendas'] = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 
@@ -123,10 +121,12 @@ try {
       background-color: #17a2b8;
       color: white;
     }
+
     .btn-agenda:hover {
       background-color: #138496;
       color: white;
     }
+
     .modal-dialog {
       max-width: 700px;
     }
@@ -138,7 +138,7 @@ try {
 
   <div class="content">
     <h1 class="mb-4">Quản Lý Hội Thảo</h1>
-    
+
     <?php if (!empty($message)): ?>
       <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
         <?php echo $message; ?>
@@ -152,10 +152,10 @@ try {
       <a href="./admin_seminar_create.php" class="btn btn-primary">
         <i class="fas fa-plus"></i> Thêm Hội Thảo
       </a>
-      
+
       <form class="form-inline">
         <input class="form-control mr-sm-2" type="search" name="search" placeholder="Tìm kiếm..." aria-label="Search"
-               value="<?php echo htmlspecialchars($search); ?>">
+          value="<?php echo htmlspecialchars($search); ?>">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">
           <i class="fas fa-search"></i> Tìm kiếm
         </button>
@@ -183,9 +183,9 @@ try {
                 <td><?php echo htmlspecialchars($seminar['topic']); ?></td>
                 <td>
                   <?php
-                    $start = new DateTime($seminar['start_time']);
-                    $end = new DateTime($seminar['end_time']);
-                    echo $start->format('d/m/Y, H:i') . ' - ' . $end->format('H:i');
+                  $start = new DateTime($seminar['start_time']);
+                  $end = new DateTime($seminar['end_time']);
+                  echo $start->format('d/m/Y, H:i') . ' - ' . $end->format('H:i');
                   ?>
                 </td>
                 <td><?php echo htmlspecialchars($seminar['location_name'] ?? 'Chưa thiết lập'); ?></td>
@@ -195,8 +195,8 @@ try {
                   <a href="./admin_seminar_edit.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-warning">
                     <i class="fas fa-edit"></i>
                   </a>
-                  <a href="?action=delete&id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-danger" 
-                     onclick="return confirm('Bạn có chắc chắn muốn xóa hội thảo này? Tất cả agenda và đăng ký liên quan sẽ bị xóa.')">
+                  <a href="?action=delete&id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Bạn có chắc chắn muốn xóa hội thảo này? Tất cả agenda và đăng ký liên quan sẽ bị xóa.')">
                     <i class="fas fa-trash"></i>
                   </a>
                   <a href="./admin_seminar_view.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-success">
@@ -223,22 +223,22 @@ try {
         <ul class="pagination justify-content-center">
           <?php
           $queryParams = $_GET;
-          
+
           $queryParams['page'] = $currentPage - 1;
           $prevPageUrl = '?' . http_build_query($queryParams);
-          
+
           $queryParams['page'] = $currentPage + 1;
           $nextPageUrl = '?' . http_build_query($queryParams);
           ?>
-          
+
           <li class="page-item <?php echo $currentPage <= 1 ? 'disabled' : ''; ?>">
             <a class="page-link" href="<?php echo $currentPage <= 1 ? '#' : $prevPageUrl; ?>" aria-label="Previous">
               <span aria-hidden="true">&laquo;</span>
             </a>
           </li>
-          
+
           <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-            <?php 
+            <?php
             $queryParams['page'] = $i;
             $pageUrl = '?' . http_build_query($queryParams);
             ?>
@@ -246,7 +246,7 @@ try {
               <a class="page-link" href="<?php echo $pageUrl; ?>"><?php echo $i; ?></a>
             </li>
           <?php endfor; ?>
-          
+
           <li class="page-item <?php echo $currentPage >= $totalPages ? 'disabled' : ''; ?>">
             <a class="page-link" href="<?php echo $currentPage >= $totalPages ? '#' : $nextPageUrl; ?>" aria-label="Next">
               <span aria-hidden="true">&raquo;</span>
@@ -291,17 +291,17 @@ try {
                           <td><?php echo htmlspecialchars($agenda['speaker_name'] ?? 'Chưa thiết lập'); ?></td>
                           <td>
                             <?php
-                              $start = new DateTime($agenda['start_time']);
-                              $end = new DateTime($agenda['end_time']);
-                              echo $start->format('H:i') . ' - ' . $end->format('H:i');
+                            $start = new DateTime($agenda['start_time']);
+                            $end = new DateTime($agenda['end_time']);
+                            echo $start->format('H:i') . ' - ' . $end->format('H:i');
                             ?>
                           </td>
                           <td>
                             <a href="./admin_agenda_edit.php?id=<?php echo $agenda['agenda_id']; ?>&seminar_id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-warning">
                               <i class="fas fa-edit"></i>
                             </a>
-                            <a href="./admin_agenda_delete.php?id=<?php echo $agenda['agenda_id']; ?>&seminar_id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-danger" 
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa chương trình này?')">
+                            <a href="./admin_agenda_delete.php?id=<?php echo $agenda['agenda_id']; ?>&seminar_id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-danger"
+                              onclick="return confirm('Bạn có chắc chắn muốn xóa chương trình này?')">
                               <i class="fas fa-trash"></i>
                             </a>
                           </td>

@@ -11,13 +11,13 @@ try {
   $userQuery = $conn->query("SELECT COUNT(*) as total FROM users");
   $userCount = $userQuery->fetch(PDO::FETCH_ASSOC)['total'];
 
-  $seminarQuery = $conn->query("SELECT COUNT(*) as total FROM seminars");
+  $seminarQuery = $conn->query("SELECT COUNT(*) as total FROM seminars WHERE status = 1");
   $seminarCount = $seminarQuery->fetch(PDO::FETCH_ASSOC)['total'];
 
-  $speakerQuery = $conn->query("SELECT COUNT(*) as total FROM speakers");
+  $speakerQuery = $conn->query("SELECT COUNT(*) as total FROM speakers WHERE status = 1");
   $speakerCount = $speakerQuery->fetch(PDO::FETCH_ASSOC)['total'];
 
-  $locationQuery = $conn->query("SELECT COUNT(*) as total FROM locations");
+  $locationQuery = $conn->query("SELECT COUNT(*) as total FROM locations WHERE status = 1");
   $locationCount = $locationQuery->fetch(PDO::FETCH_ASSOC)['total'];
 
   $messageQuery = $conn->query("SELECT COUNT(*) as total FROM contact");

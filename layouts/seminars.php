@@ -1,5 +1,4 @@
 <?php
-// Hàm tạo URL phân trang kèm theo các tham số tìm kiếm và lọc
 function buildPaginationUrl($page, $search, $categories) {
   $url = "?page=" . $page;
   if (!empty($search)) {
@@ -119,7 +118,7 @@ function buildPaginationUrl($page, $search, $categories) {
   }
 
   // Xây dựng câu truy vấn cơ bản
-  $baseQuery = "FROM seminars WHERE 1=1";
+  $baseQuery = "FROM seminars WHERE status = 1";
   $queryParams = [];
 
   if (!empty($search)) {

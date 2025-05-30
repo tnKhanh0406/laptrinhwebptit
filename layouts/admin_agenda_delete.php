@@ -1,17 +1,6 @@
 <?php
 session_start();
-
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header('Location: ../index.php');
-  exit;
-}
-
 require_once '../config.php';
-
-if (!isset($_GET['id']) || !is_numeric($_GET['id']) || !isset($_GET['seminar_id']) || !is_numeric($_GET['seminar_id'])) {
-  header('Location: ./admin_seminars.php');
-  exit;
-}
 
 $agendaId = (int)$_GET['id'];
 $seminarId = (int)$_GET['seminar_id'];
@@ -25,7 +14,7 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
   $_SESSION['message'] = "Đã xóa chương trình thành công!";
   $_SESSION['message_type'] = "success";
 
-  header('Location: ./admin_seminars.php');
+  header('Location: ./admin_seminar_view.php?id=' . $seminarId);
   exit;
 } else {
   $stmt = $conn->prepare("
@@ -40,13 +29,6 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
   $stmt->execute();
 
   $agenda = $stmt->fetch(PDO::FETCH_ASSOC);
-
-  if (!$agenda) {
-    $_SESSION['message'] = "Không tìm thấy chương trình!";
-    $_SESSION['message_type'] = "warning";
-    header('Location: ./admin_seminar_edit.php?id=' . $seminarId);
-    exit;
-  }
 }
 ?>
 
@@ -61,22 +43,19 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
   <link rel="stylesheet" href="../assets/css/style-admin.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <title>Xóa Chương Trình - Admin</title>
+  <title>Xóa Chương Trình</title>
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-5 mb-5' : 'content'; ?>">
     <h1 class="mb-4 text-danger">Xóa Chương Trình</h1>
-
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./admin_seminars.php">Danh sách hội thảo</a></li>
-        <li class="breadcrumb-item"><a href="./admin_seminar_edit.php?id=<?php echo $seminarId; ?>">Chỉnh sửa hội thảo</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Xóa chương trình</li>
-      </ol>
-    </nav>
 
     <div class="card border-danger mb-4">
       <div class="card-header bg-danger text-white">
@@ -100,13 +79,17 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
           <a href="?id=<?php echo $agendaId; ?>&seminar_id=<?php echo $seminarId; ?>&confirm=yes" class="btn btn-danger">
             <i class="fas fa-trash"></i> Xác nhận xóa
           </a>
-          <a href="./admin_seminar_edit.php?id=<?php echo $seminarId; ?>" class="btn btn-secondary ml-2">
+          <a href="./admin_seminar_view.php?id=<?php echo $seminarId; ?>" class="btn btn-secondary ml-2">
             <i class="fas fa-arrow-left"></i> Hủy và quay lại
           </a>
         </div>
       </div>
     </div>
   </div>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './footer.php';
+  } ?>
 
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

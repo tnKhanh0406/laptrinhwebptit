@@ -68,24 +68,8 @@ if (isset($_SESSION['user_id'])) {
               <a class="dropdown-item" href="../../Bai032/layouts/my_seminars.php">
                 <i class="fas fa-user-edit mr-2"></i> Hội thảo của tôi
               </a>
-              <?php if (!empty($userSeminars)): ?>
-                <div class="dropdown-divider"></div>
-                <h6 class="dropdown-header">Hội thảo đã đăng ký</h6>
-
-                <?php foreach ($userSeminars as $seminar): ?>
-                  <a class="dropdown-item" href="../../Bai032/layouts/seminar_detail.php?id=<?php echo $seminar['seminar_id']; ?>">
-                    <i class="fas fa-calendar-check mr-2"></i>
-                    <?php
-                    $topic = strlen($seminar['topic']) > 25 ? substr($seminar['topic'], 0, 25) . '...' : $seminar['topic'];
-                    echo htmlspecialchars($topic);
-
-                    $startTime = new DateTime($seminar['start_time']);
-                    echo ' <small class="text-muted">(' . $startTime->format('d/m/Y') . ')</small>';
-                    ?>
-                  </a>
-                <?php endforeach; ?>
-              <?php endif; ?>
-
+              <a class="dropdown-item" href="../../Bai032/layouts/my_registrations.php">
+                <i class="fas fa-list-alt mr-2"></i> Đăng ký của tôi
               <div class="dropdown-divider"></div>
               <a class="dropdown-item text-danger" href="../../Bai032/layouts/logout.php">
                 <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất

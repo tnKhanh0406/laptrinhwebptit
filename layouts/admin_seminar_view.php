@@ -3,11 +3,6 @@ session_start();
 
 require_once '../config.php';
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-  header('Location: ./admin_seminars.php');
-  exit;
-}
-
 $seminarId = (int)$_GET['id'];
 $seminar = null;
 $location = null;
@@ -71,9 +66,14 @@ $registrations = $regStmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-5 mb-5' : 'content'; ?>">
     <h1 class="mb-4">Chi tiết Hội thảo</h1>
 
     <?php if (isset($error)): ?>
@@ -85,17 +85,25 @@ $registrations = $regStmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="card-header bg-primary text-white">
           <div class="d-flex justify-content-between align-items-center">
             <span><i class="fas fa-chalkboard-teacher"></i> Thông tin hội thảo</span>
-            <div>
-              <a href="./admin_seminar_edit.php?id=<?php echo $seminarId; ?>" class="btn btn-sm btn-light">
-                <i class="fas fa-edit"></i> Chỉnh sửa
-              </a>
-            </div>
           </div>
         </div>
         <div class="card-body">
           <h2><?php echo htmlspecialchars($seminar['topic']); ?></h2>
           <div class="badge badge-info mb-3"><?php echo htmlspecialchars($seminar['category']); ?></div>
+          <?php if ($seminar['status'] == 0): ?>
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-circle"></i> Hội thảo này đang chờ phê duyệt
 
+              <?php if ($_SESSION['role'] === 'admin'): ?>
+                <form method="post" class="d-inline ml-3" action="pending_seminars.php">
+                  <input type="hidden" name="seminar_id" value="<?php echo $seminarId; ?>">
+                  <button type="submit" name="approve_seminar" class="btn btn-sm btn-success">
+                    <i class="fas fa-check"></i> Phê duyệt ngay
+                  </button>
+                </form>
+              <?php endif; ?>
+            </div>
+          <?php endif; ?>
           <div class="row mb-3">
             <div class="col-md-6">
               <p>
@@ -296,6 +304,10 @@ $registrations = $regStmt->fetchAll(PDO::FETCH_ASSOC);
       </div>
     <?php endif; ?>
   </div>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './footer.php';
+  } ?>
 
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

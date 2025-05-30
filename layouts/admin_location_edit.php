@@ -90,13 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         throw new Exception("Không thể tải lên hình ảnh. Vui lòng thử lại sau.");
       }
 
-      // Xóa ảnh cũ nếu có
       if (!empty($location['photo']) && $location['photo'] !== $photoName && file_exists($targetDir . $location['photo'])) {
         unlink($targetDir . $location['photo']);
       }
     }
 
-    // Cập nhật địa điểm
     $stmt = $conn->prepare("
         UPDATE locations 
         SET name = :name,
@@ -115,12 +113,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = "Thông tin địa điểm đã được cập nhật thành công!";
     $messageType = "success";
 
-    // Cập nhật thông tin địa điểm trong biến $location
     $location['name'] = $name;
     $location['address'] = $address;
     $location['photo'] = $photoName;
 
-    // Chuyển hướng sau 1.5 giây
     header('refresh:1.5;url=./admin_locations.php');
   } else {
     $message = implode("<br>", $errors);
@@ -155,13 +151,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="content">
     <h1 class="mb-4">Chỉnh Sửa Địa điểm</h1>
-
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./admin_locations.php">Danh sách địa điểm</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa địa điểm</li>
-      </ol>
-    </nav>
 
     <?php if (!empty($message)): ?>
       <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">

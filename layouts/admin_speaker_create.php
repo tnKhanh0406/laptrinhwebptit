@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($validMime) {
       $newname = uniqid() . '.' . $ext;
       $photoPath = $targetDir . $newname;
-
+      move_uploaded_file($_FILES["photo"]["tmp_name"], $photoPath);
       $photoName = $newname;
     } else {
       $errors[] = "Lỗi: Có vấn đề với định dạng file. Tải lên bị hủy. (MIME: $filetype)";
@@ -59,14 +59,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   if (empty($errors)) {
     $stmt = $conn->prepare("
-        INSERT INTO speakers (full_name, bio, description, photo) 
-        VALUES (:full_name, :bio, :description, :photo)
+        INSERT INTO speakers (full_name, bio, description, photo, status, user_id) 
+        VALUES (:full_name, :bio, :description, :photo, :status, :user_id)
       ");
 
     $stmt->bindParam(':full_name', $fullName);
     $stmt->bindParam(':bio', $bio);
     $stmt->bindParam(':description', $description);
     $stmt->bindParam(':photo', $photoName);
+    $stmt->bindValue(':status', ($_SESSION['role'] === 'admin') ? 1 : 0);
+    $stmt->bindValue(':user_id', $_SESSION['user_id']);
 
     $stmt->execute();
 
@@ -74,9 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $messageType = "success";
 
     $fullName = $bio = $description = '';
-
-    // Chuyển hướng sau 1.5 giây
-    header('refresh:1.5;url=./admin_speakers.php');
   } else {
     $message = implode("<br>", $errors);
     $messageType = "danger";
@@ -110,9 +109,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
+  <?php
+  if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user') {
+    include_once './header.php';
+  } else {
+    include_once './admin_sidebar.php';
+  } ?>
 
-  <div class="content">
+  <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'user') ? 'container mt-4 mb-4' : 'content'; ?>">
     <h1 class="mb-4">Thêm Diễn giả Mới</h1>
 
     <?php if (!empty($message)): ?>
@@ -171,6 +175,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
   </div>
+  <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'): ?>
+    <?php include_once './footer.php'; ?>
+  <?php endif; ?>
 
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
