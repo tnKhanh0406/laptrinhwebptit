@@ -1,10 +1,5 @@
 <?php
 session_start();
-
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header('Location: ../index.php');
-  exit;
-}
 require_once '../config.php';
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -19,10 +14,6 @@ $stmt->bindParam(':speaker_id', $speakerId, PDO::PARAM_INT);
 $stmt->execute();
 
 $speaker = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$speaker) {
-  $errorMessage = "Không tìm thấy diễn giả!";
-}
 
 $agendaStmt = $conn->prepare("
     SELECT a.*, e.topic as event_name, e.start_time as seminar_start, e.end_time as seminar_end,
@@ -47,19 +38,17 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="../assets/css/style-admin.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <title>Chi tiết Diễn giả</title>
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
-
-  <div class="content">
+  <?php include '../layouts/header.php'; ?>
+  <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1>Chi tiết Diễn giả</h1>
-      <a href="./admin_speakers.php" class="btn btn-secondary">
+      <a href="./speakers.php" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Quay lại
       </a>
     </div>
@@ -82,17 +71,6 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
                   alt="Default speaker image"
                   class="img-fluid rounded mb-3" style="max-height: 300px;">
               <?php endif; ?>
-
-              <div class="mt-3">
-                <a href="./admin_speaker_edit.php?id=<?php echo $speaker['speaker_id']; ?>" class="btn btn-primary">
-                  <i class="fas fa-edit"></i> Chỉnh sửa
-                </a>
-                <a href="./admin_speakers.php?action=delete&id=<?php echo $speaker['speaker_id']; ?>"
-                  class="btn btn-danger"
-                  onclick="return confirm('Bạn có chắc chắn muốn xóa diễn giả này?')">
-                  <i class="fas fa-trash"></i> Xóa
-                </a>
-              </div>
             </div>
 
             <div class="col-md-8">
@@ -142,13 +120,6 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
                   <p><a href="<?php echo htmlspecialchars($speaker['website']); ?>" target="_blank"><?php echo htmlspecialchars($speaker['website']); ?></a></p>
                 </div>
               <?php endif; ?>
-
-              <?php if (!empty($speaker['social_links'])): ?>
-                <div class="mb-3">
-                  <h5>Mạng xã hội:</h5>
-                  <p><?php echo nl2br(htmlspecialchars($speaker['social_links'])); ?></p>
-                </div>
-              <?php endif; ?>
             </div>
           </div>
         </div>
@@ -175,9 +146,9 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
                   <?php foreach ($agendaItems as $item): ?>
                     <tr>
                       <td>
-                        <a href="./admin_seminar_view.php?id=<?php echo $item['seminar_id']; ?>">
+                        <div>
                           <?php echo htmlspecialchars($item['event_name']); ?>
-                        </a>
+                        </div>
                         <div class="small text-muted">
                           <?php
                           echo date('d/m/Y', strtotime($item['seminar_start']));
@@ -205,8 +176,8 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
       </div>
     <?php endif; ?>
-
   </div>
+  <?php include '../layouts/footer.php'; ?>
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>

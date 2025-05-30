@@ -183,9 +183,6 @@ $speakers = $stmt->fetchAll(PDO::FETCH_ASSOC);
                   ?>
                 </td>
                 <td>
-                  <a href="./admin_speaker_view.php?id=<?php echo $speaker['speaker_id']; ?>" class="btn btn-sm btn-info" title="Xem chi tiết">
-                    <i class="fas fa-eye"></i>
-                  </a>
                   <a href="./admin_speaker_edit.php?id=<?php echo $speaker['speaker_id']; ?>" class="btn btn-sm btn-warning" title="Chỉnh sửa">
                     <i class="fas fa-edit"></i>
                   </a>

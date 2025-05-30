@@ -66,7 +66,7 @@
   include '../config.php';
 
   //phân trang
-  $itemsPerPage = 6;
+  $itemsPerPage = 9;
   $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
   if ($currentPage < 1) {
@@ -95,15 +95,14 @@
   <section class="speakers-section">
     <div class="row">
       <?php foreach ($speakers as $speaker): ?>
-        <div class="col-md-4 d-flex mb-4">
+        <a href="./speaker_view.php?id=<?php echo $speaker['speaker_id']; ?>" class="col-md-4 d-flex mb-4">
           <div class="speaker-card h-100 w-100">
             <img src="<?php echo htmlspecialchars('../assets/images/' . (!empty($speaker['photo']) ? $speaker['photo'] : 'default-speaker.jpg')); ?>"
               alt="<?php echo htmlspecialchars($speaker['full_name']); ?>" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px;">
             <h5><?php echo htmlspecialchars($speaker['full_name']); ?></h5>
             <p class="font-weight-bold"><?php echo htmlspecialchars(substr($speaker['bio'] ?? '', 0, 150)) . (strlen($speaker['bio'] ?? '') > 150 ? '...' : ''); ?></p>
-            <p><?php echo htmlspecialchars($speaker['description']) ?></p>
           </div>
-        </div>
+        </a>
       <?php endforeach; ?>
     </div>
 

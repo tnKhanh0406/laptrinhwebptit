@@ -75,13 +75,6 @@ try {
   <div class="content">
     <h1 class="mb-4">Chi tiết Địa điểm</h1>
     
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./admin_locations.php">Danh sách địa điểm</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Chi tiết địa điểm</li>
-      </ol>
-    </nav>
-    
     <?php if (isset($errorMessage)): ?>
       <div class="alert alert-danger">
         <?php echo $errorMessage; ?>
