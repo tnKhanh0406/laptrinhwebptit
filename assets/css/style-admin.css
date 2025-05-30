@@ -1,0 +1,77 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-color: #f8f9fa;
+}
+.sidebar {
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  background-color: #1a2a6c;
+  padding-top: 20px;
+  color: white;
+}
+.sidebar a {
+  color: white;
+  padding: 15px 20px;
+  display: block;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.sidebar a:hover {
+  background-color: #b21f2d;
+}
+.sidebar .nav-title {
+  padding: 15px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+.content {
+  margin-left: 250px;
+  padding: 20px;
+}
+.dashboard-card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.dashboard-card h5 {
+  color: #1a2a6c;
+}
+.navbar {
+  background-color: #1a2a6c;
+}
+.navbar-brand {
+  margin-left: 250px;
+}
+.navbar-brand,
+.nav-link {
+  color: white !important;
+}
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    right: 0;
+  }
+  .content {
+    margin-right: 0;
+  }
+}
+.btn-agenda {
+  background-color: #1a2a6c;
+  color: white;
+}
+.btn-agenda:hover {
+  background-color: #0f1845;
+}
+.agenda-table {
+  margin-top: 10px;
+  background: #f8f9fa;
+}

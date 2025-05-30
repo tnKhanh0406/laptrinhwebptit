@@ -1,0 +1,342 @@
+:root {
+  --primary: #ffffff;
+  --secondary: #1d2939;
+  --upcoming: #008739;
+  --date: #8d8d8d;
+  --hover: #007bff;
+
+  --font: "Roboto", sans-serif;
+}
+
+body {
+  font-family: var(--font);
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+a:hover {
+  text-decoration: none;
+}
+
+/* Header section */
+.hero-section {
+  background: linear-gradient(rgba(0, 0, 50, 0.7), rgba(0, 0, 50, 0.7)),
+    url("https://via.placeholder.com/1920x400?text=Contact+Us");
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px 0;
+  text-align: center;
+}
+.hero-section h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+header {
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  background-color: #fff;
+}
+a.navbar-brand {
+  font-size: 30px;
+}
+a.nav-link {
+  margin-right: 25px;
+  font-weight: 500;
+}
+.navbar-light .navbar-nav .nav-link:hover {
+  color: var(--hover);
+}
+.navbar-light .navbar-nav .nav-link {
+  color: #000;
+}
+.navbar {
+  padding: 1rem 8rem;
+}
+.dropdown-menu {
+  min-width: 280px;
+  padding: 10px 0;
+}
+
+.dropdown-header {
+  font-weight: 600;
+  color: #1a2a6c;
+  padding: 8px 20px;
+}
+
+.dropdown-item {
+  padding: 8px 20px;
+}
+
+.dropdown-item:active,
+.dropdown-item:focus {
+  background-color: #e9ecef;
+  color: inherit;
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #f8d7da;
+}
+
+.dropdown-item.text-primary:hover {
+  background-color: #cce5ff;
+}
+/* End header section */
+/* Hero Section*/
+.hero-section {
+  background-image: linear-gradient(to right, #0d2dba, #07175d);
+  color: #ffffff;
+}
+.hero-section .inner-title {
+  font-size: 45px;
+  font-weight: 600;
+}
+.hero-section .inner-desc {
+  font-size: 18px;
+}
+.hero-section .inner-img img {
+  width: 550px;
+}
+.search-section {
+  color: black;
+  bottom: -100px;
+  left: calc(12.5%);
+  width: 75%;
+  margin: auto;
+}
+.search-section .search-content {
+  background-color: #fff;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+  padding: 35px;
+  text-align: center;
+  border-radius: 20px;
+}
+.search-section .search-title {
+  font-weight: 500;
+  font-size: 21px;
+}
+.search-form #search {
+  width: 50%;
+  padding: 8px 5px;
+}
+.search-form #button {
+  padding: 8px 10px;
+  margin-left: -4.8px;
+  background-color: #000;
+  color: #fff;
+}
+/* End hero section*/
+/*Button*/
+.button {
+  padding: 13px 23px;
+  border-radius: 10px;
+  background-color: #f9d550;
+  color: black;
+  font-size: 18px;
+  font-weight: 500;
+}
+a.btn {
+  padding: 8px 17px;
+}
+.button:hover {
+  color: #000;
+}
+/*End button*/
+/* carousel section */
+.carousel-section {
+  margin-top: 150px;
+}
+/* .carousel-section img {
+  margin-right: 48px;
+} */
+.carousel-indicators {
+  bottom: -90px;
+}
+.carousel-indicators li {
+  background-color: var(--date);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.carousel-indicators .active {
+  background-color: var(--hover);
+}
+.carousel-control-next,
+.carousel-control-prev {
+  background-color: #00000079;
+  bottom: auto;
+  top: calc(25% - 10px);
+  width: auto;
+  padding: 20px;
+}
+p.upcoming {
+  background-color: var(--upcoming);
+  color: #fff;
+  top: 5px;
+  left: 0;
+  border-radius: 5px;
+  padding: 4px 6px;
+  font-size: 13px;
+}
+.carousel-section .img img {
+  aspect-ratio: 2 / 1;
+  width: 100%;
+  height: 175px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  border-radius: 8px;
+  margin-bottom: 13px;
+}
+.carousel-section .carousel-card .img {
+  overflow: hidden;
+}
+.carousel-section .carousel-card:hover img {
+  transform: scale(1.1);
+}
+.carousel-section .date {
+  color: var(--date);
+}
+/* Kiểu dáng cho các trạng thái hội thảo */
+.upcoming {
+  background-color: #28a745;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ongoing {
+  background-color: #dc3545;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.past {
+  background-color: #6c757d;
+  color: white;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Thêm kiểu cho hiển thị địa điểm */
+.carousel-card .location {
+  color: #666;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.carousel-card .location i {
+  margin-right: 5px;
+  color: #dc3545;
+}
+/* end carousel section */
+/*Explore section*/
+.explore-section {
+  margin-top: 150px;
+  background-color: var(--secondary);
+  padding: 60px 0;
+}
+/*End explore section*/
+/*topic section*/
+.topic-section {
+  background: linear-gradient(
+    to right,
+    #ffceb4 0,
+    #f4dbb7 22%,
+    #fdefb4 70%,
+    #a3fbff 100%
+  );
+  padding: 60px 0;
+}
+.topic-section .wraper {
+  gap: 20px;
+}
+/*end topic section*/
+/*logo section*/
+.logo-section {
+  padding: 60px 0;
+}
+.logo-section img {
+  aspect-ratio: 2 / 1;
+  width: 100%;
+  object-fit: contain;
+}
+/* .logo-section .title{
+
+} */
+/*end logo section*/
+/*contact*/
+.contact {
+  padding: 50px 0;
+  background-color: rgba(233, 229, 229, 0.288);
+}
+.contact iframe {
+  width: 100%;
+  height: 280px;
+  margin-bottom: 30px;
+}
+.contact .inner-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.contact .inner-card i {
+  font-size: 20px;
+  width: 45px;
+  height: 45px;
+  background-color: var(--hover);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin-right: 18px;
+}
+.contact .inner-card .inner-address .inner-title-adr {
+  color: var(--hover);
+  font-size: 18px;
+  font-weight: 500;
+}
+.contact .inner-card .inner-address .inner-adr {
+  font-size: 14.5px;
+}
+.contact input {
+  border-radius: 0;
+}
+.contact textarea {
+  width: 100%;
+  height: 140px;
+  padding: 10px 14px;
+  border: solid #c6c6c6 1px;
+}
+/*end contact*/
+/*footer*/
+.footer-section {
+  background-color: var(--secondary);
+  padding: 60px 0;
+}
+.footer-section a {
+  color: #fff;
+}
+
+.footer-section a:hover {
+  text-decoration: underline;
+}
+.footer-section a.logo {
+  text-decoration: none;
+  font-size: 30px;
+}
+.footer-section .wraper {
+  gap: 10px;
+}
+.footer-section .wraper a {
+  font-size: 20px;
+}
+hr {
+  background-color: #fff;
+}
+/*end footer*/
