@@ -1,16 +1,8 @@
 <?php
 session_start();
 
-// Kiểm tra quyền admin
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header('Location: ../index.php');
-  exit;
-}
-
-// Kết nối CSDL
 require_once '../config.php';
 
-// Kiểm tra seminar_id
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
   header('Location: ./admin_seminars.php');
   exit;
@@ -22,52 +14,45 @@ $location = null;
 $agendaItems = [];
 $registrations = [];
 
-// Lấy thông tin hội thảo và địa điểm
-try {
-  $stmt = $conn->prepare("
+$stmt = $conn->prepare("
     SELECT s.*, l.name as location_name, l.address as location_address, l.photo as location_photo
     FROM seminars s
     LEFT JOIN locations l ON s.location_id = l.location_id
     WHERE s.seminar_id = :seminar_id
   ");
-  $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
-  $stmt->execute();
+$stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
+$stmt->execute();
 
-  $result = $stmt->fetch(PDO::FETCH_ASSOC);
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if (!$result) {
-    header('Location: ./admin_seminars.php');
-    exit;
-  }
+if (!$result) {
+  header('Location: ./admin_seminars.php');
+  exit;
+}
 
-  $seminar = $result;
+$seminar = $result;
 
-  // Lấy danh sách chương trình
-  $agendaStmt = $conn->prepare("
+$agendaStmt = $conn->prepare("
     SELECT a.*, spk.full_name as speaker_name, spk.photo as speaker_photo
     FROM agenda a
     LEFT JOIN speakers spk ON a.speaker_id = spk.speaker_id
     WHERE a.seminar_id = :seminar_id
     ORDER BY a.start_time ASC
   ");
-  $agendaStmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
-  $agendaStmt->execute();
-  $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
+$agendaStmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
+$agendaStmt->execute();
+$agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
 
-  // Lấy số lượng đăng ký tham gia
-  $regStmt = $conn->prepare("
+$regStmt = $conn->prepare("
     SELECT r.*, u.username, u.full_name
     FROM registrations r
     JOIN users u ON r.user_id = u.user_id
     WHERE r.seminar_id = :seminar_id
     ORDER BY r.created_at DESC
   ");
-  $regStmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
-  $regStmt->execute();
-  $registrations = $regStmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-  $error = "Lỗi khi lấy thông tin hội thảo: " . $e->getMessage();
-}
+$regStmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
+$regStmt->execute();
+$registrations = $regStmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -82,7 +67,7 @@ try {
   <link rel="stylesheet" href="../assets/css/style-admin.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <title>Chi tiết Hội thảo - Admin</title>
+  <title>Chi tiết Hội thảo</title>
 </head>
 
 <body>
@@ -90,13 +75,6 @@ try {
 
   <div class="content">
     <h1 class="mb-4">Chi tiết Hội thảo</h1>
-
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./admin_seminars.php">Danh sách hội thảo</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Chi tiết hội thảo</li>
-      </ol>
-    </nav>
 
     <?php if (isset($error)): ?>
       <div class="alert alert-danger">
@@ -274,7 +252,6 @@ try {
                     <th>Họ tên</th>
                     <th>Thời gian đăng ký</th>
                     <th>Trạng thái</th>
-                    <th>Thao tác</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -309,19 +286,6 @@ try {
                           <?php echo $status; ?>
                         </span>
                       </td>
-                      <td>
-                        <!-- Các nút thao tác quản lý đăng ký -->
-                        <?php if ($reg['status'] === 'pending'): ?>
-                          <button class="btn btn-sm btn-success mb-1" onclick="updateRegistrationStatus(<?php echo $reg['registration_id']; ?>, 'confirmed')">
-                            <i class="fas fa-check"></i> Xác nhận
-                          </button>
-                        <?php endif; ?>
-                        <?php if ($reg['status'] !== 'cancelled'): ?>
-                          <button class="btn btn-sm btn-danger mb-1" onclick="updateRegistrationStatus(<?php echo $reg['registration_id']; ?>, 'cancelled')">
-                            <i class="fas fa-times"></i> Hủy
-                          </button>
-                        <?php endif; ?>
-                      </td>
                     </tr>
                   <?php endforeach; ?>
                 </tbody>
@@ -337,43 +301,6 @@ try {
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
-
-  <!-- Script để cập nhật trạng thái đăng ký -->
-  <script>
-    function updateRegistrationStatus(registrationId, status) {
-      if (confirm('Bạn có chắc chắn muốn ' + (status === 'confirmed' ? 'xác nhận' : 'hủy') + ' đăng ký này?')) {
-        // Tạo form ẩn để submit
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = './admin_registration_update.php';
-
-        // Thêm các input fields
-        const registrationIdInput = document.createElement('input');
-        registrationIdInput.type = 'hidden';
-        registrationIdInput.name = 'registration_id';
-        registrationIdInput.value = registrationId;
-
-        const statusInput = document.createElement('input');
-        statusInput.type = 'hidden';
-        statusInput.name = 'status';
-        statusInput.value = status;
-
-        const seminarIdInput = document.createElement('input');
-        seminarIdInput.type = 'hidden';
-        seminarIdInput.name = 'seminar_id';
-        seminarIdInput.value = <?php echo $seminarId; ?>;
-
-        // Thêm input vào form
-        form.appendChild(registrationIdInput);
-        form.appendChild(statusInput);
-        form.appendChild(seminarIdInput);
-
-        // Thêm form vào body và submit
-        document.body.appendChild(form);
-        form.submit();
-      }
-    }
-  </script>
 </body>
 
 </html>
