@@ -1,11 +1,6 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header('Location: ../index.php');
-  exit;
-}
-
 require_once '../config.php';
 
 $message = '';
@@ -62,12 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
   if (empty($errors)) {
-    // Nếu có hình ảnh, di chuyển vào thư mục lưu trữ
     if ($photoPath && !move_uploaded_file($_FILES["photo"]["tmp_name"], $photoPath)) {
       throw new Exception("Không thể tải lên hình ảnh. Vui lòng thử lại sau.");
     }
 
-    // Thêm địa điểm mới
     $stmt = $conn->prepare("
         INSERT INTO locations (name, address, photo) 
         VALUES (:name, :address, :photo)
@@ -84,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $name = $address = '';
 
-    // Chuyển hướng sau 1.5 giây
     header('refresh:1.5;url=./admin_locations.php');
   } else {
     $message = implode("<br>", $errors);
@@ -104,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="../assets/css/style-admin.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <title>Thêm Địa điểm - Admin</title>
+  <title>Thêm Địa điểm</title>
 </head>
 
 <body>
@@ -112,13 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="content">
     <h1 class="mb-4">Thêm Địa điểm Mới</h1>
-
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./admin_locations.php">Danh sách địa điểm</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Thêm địa điểm mới</li>
-      </ol>
-    </nav>
 
     <?php if (!empty($message)): ?>
       <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
@@ -163,16 +148,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-save"></i> Lưu
             </button>
-            <a href="./admin_locations.php" class="btn btn-secondary ml-2">
-              <i class="fas fa-arrow-left"></i> Quay lại
-            </a>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>

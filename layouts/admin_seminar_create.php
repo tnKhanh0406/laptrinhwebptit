@@ -1,11 +1,6 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header('Location: ../index.php');
-  exit;
-}
-
 require_once '../config.php';
 
 $message = '';
@@ -246,9 +241,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-save"></i> Lưu
             </button>
-            <a href="./admin_seminars.php" class="btn btn-secondary ml-2">
-              <i class="fas fa-arrow-left"></i> Quay lại
-            </a>
           </div>
         </form>
       </div>

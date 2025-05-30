@@ -65,6 +65,9 @@ if (isset($_SESSION['user_id'])) {
                   <i class="fas fa-cog mr-2"></i> Quản lý
                 </a>
               <?php endif; ?>
+              <a class="dropdown-item" href="../../Bai032/layouts/my_seminars.php">
+                <i class="fas fa-user-edit mr-2"></i> Hội thảo của tôi
+              </a>
               <?php if (!empty($userSeminars)): ?>
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">Hội thảo đã đăng ký</h6>

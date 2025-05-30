@@ -441,3 +441,30 @@ CREATE TABLE contact (
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE locations
+ADD status TINYINT DEFAULT 1;
+
+ALTER TABLE locations
+ADD COLUMN user_id INT DEFAULT 1,
+ADD CONSTRAINT fk_seminars_user
+  FOREIGN KEY (user_id)
+  REFERENCES users(user_id);
+
+ALTER TABLE speakers
+ADD status TINYINT DEFAULT 1;
+
+ALTER TABLE speakers
+ADD COLUMN user_id INT DEFAULT 1,
+ADD CONSTRAINT fk_seminars_user
+  FOREIGN KEY (user_id)
+  REFERENCES users(user_id);
+
+ALTER TABLE seminars
+ADD status TINYINT DEFAULT 1;
+
+ALTER TABLE seminars
+ADD COLUMN user_id INT DEFAULT 1,
+ADD CONSTRAINT fk_seminars_userid
+  FOREIGN KEY (user_id)
+  REFERENCES users(user_id);

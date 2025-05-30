@@ -28,29 +28,22 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
   header('Location: ./admin_seminars.php');
   exit;
 } else {
-  try {
-    $stmt = $conn->prepare("
+  $stmt = $conn->prepare("
       SELECT a.*, s.topic as seminar_topic, spk.full_name as speaker_name
       FROM agenda a 
       LEFT JOIN seminars s ON a.seminar_id = s.seminar_id
       LEFT JOIN speakers spk ON a.speaker_id = spk.speaker_id
       WHERE a.agenda_id = :agenda_id AND a.seminar_id = :seminar_id
     ");
-    $stmt->bindParam(':agenda_id', $agendaId, PDO::PARAM_INT);
-    $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
-    $stmt->execute();
+  $stmt->bindParam(':agenda_id', $agendaId, PDO::PARAM_INT);
+  $stmt->bindParam(':seminar_id', $seminarId, PDO::PARAM_INT);
+  $stmt->execute();
 
-    $agenda = $stmt->fetch(PDO::FETCH_ASSOC);
+  $agenda = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$agenda) {
-      $_SESSION['message'] = "Không tìm thấy chương trình!";
-      $_SESSION['message_type'] = "warning";
-      header('Location: ./admin_seminar_edit.php?id=' . $seminarId);
-      exit;
-    }
-  } catch (PDOException $e) {
-    $_SESSION['message'] = "Lỗi khi lấy thông tin chương trình: " . $e->getMessage();
-    $_SESSION['message_type'] = "danger";
+  if (!$agenda) {
+    $_SESSION['message'] = "Không tìm thấy chương trình!";
+    $_SESSION['message_type'] = "warning";
     header('Location: ./admin_seminar_edit.php?id=' . $seminarId);
     exit;
   }
