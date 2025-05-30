@@ -87,7 +87,6 @@
     $offset = ($currentPage - 1) * $itemsPerPage;
   }
 
-  // Lấy dữ liệu theo phân trang
   $stmt = $conn->prepare("SELECT * FROM locations LIMIT :limit OFFSET :offset");
   $stmt->bindParam(':limit', $itemsPerPage, PDO::PARAM_INT);
   $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
@@ -100,7 +99,7 @@
   <section class="locations-section">
     <div class="row">
       <?php foreach ($locations as $location): ?>
-        <div class="col-md-4 mb-4">
+        <a href="./location_view.php?id=<?php echo $location['location_id']; ?>" class="col-md-4 mb-4">
           <div class="location-card">
             <img src="<?php echo htmlspecialchars('../assets/images/' . (!empty($location['photo']) ? $location['photo'] : 'default-location.jpg')); ?>"
               alt="<?php echo htmlspecialchars($location['name']); ?>"
@@ -109,7 +108,7 @@
             <h5><?php echo htmlspecialchars($location['name']); ?></h5>
             <p><strong>Địa chỉ:</strong> <?php echo htmlspecialchars($location['address']); ?></p>
           </div>
-        </div>
+        </a>
       <?php endforeach; ?>
     </div>
 

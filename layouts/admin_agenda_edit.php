@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $agenda['end_time'] = $endTime;
     $agenda['description'] = $description;
 
-    header('refresh:1.5;url=./admin_seminar_edit.php?id=' . $seminarId);
+    header('refresh:1.5;url=./admin_seminars.php');
   } else {
     $message = implode("<br>", $errors);
     $messageType = "danger";

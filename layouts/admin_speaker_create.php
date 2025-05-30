@@ -120,13 +120,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="content">
     <h1 class="mb-4">Thêm Diễn giả Mới</h1>
 
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="./admin_speakers.php">Danh sách diễn giả</a></li>
-        <li class="breadcrumb-item active" aria-current="page">Thêm diễn giả mới</li>
-      </ol>
-    </nav>
-
     <?php if (!empty($message)): ?>
       <div class="alert alert-<?php echo $messageType; ?> alert-dismissible fade show" role="alert">
         <?php echo $message; ?>

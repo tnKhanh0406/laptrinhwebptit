@@ -45,7 +45,7 @@ $agendaItems = $agendaStmt->fetchAll(PDO::FETCH_ASSOC);
 
 <body>
   <?php include '../layouts/header.php'; ?>
-  <div class="container">
+  <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1>Chi tiết Diễn giả</h1>
       <a href="./speakers.php" class="btn btn-secondary">

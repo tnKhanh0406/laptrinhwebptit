@@ -54,10 +54,9 @@ try {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-  <link rel="stylesheet" href="../assets/css/style-admin.css">
   <link rel="stylesheet" href="../assets/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <title>Chi tiết Địa điểm - Admin</title>
+  <title>Chi tiết Địa điểm</title>
   <style>
     .location-image {
       max-width: 100%;
@@ -70,10 +69,14 @@ try {
 </head>
 
 <body>
-  <?php include_once './admin_sidebar.php'; ?>
-
-  <div class="content">
-    <h1 class="mb-4">Chi tiết Địa điểm</h1>
+  <?php include '../layouts/header.php'; ?>
+  <div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Chi tiết Địa điểm</h1>
+      <a href="./locations.php" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Quay lại
+      </a>
+    </div>
     
     <?php if (isset($errorMessage)): ?>
       <div class="alert alert-danger">
@@ -111,15 +114,6 @@ try {
                 <strong><i class="fas fa-id-card"></i> ID:</strong> 
                 <?php echo htmlspecialchars($location['location_id']); ?>
               </p>
-              
-              <div class="mt-4">
-                <a href="./admin_location_edit.php?id=<?php echo $location['location_id']; ?>" class="btn btn-warning">
-                  <i class="fas fa-edit"></i> Chỉnh sửa
-                </a>
-                <a href="./admin_locations.php" class="btn btn-secondary ml-2">
-                  <i class="fas fa-arrow-left"></i> Quay lại
-                </a>
-              </div>
             </div>
           </div>
         </div>
@@ -139,7 +133,6 @@ try {
                     <th width="50%">Chủ đề</th>
                     <th width="20%">Bắt đầu</th>
                     <th width="20%">Kết thúc</th>
-                    <th width="5%">Xem</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -149,11 +142,6 @@ try {
                       <td><?php echo htmlspecialchars($seminar['topic']); ?></td>
                       <td><?php echo date('d/m/Y H:i', strtotime($seminar['start_time'])); ?></td>
                       <td><?php echo date('d/m/Y H:i', strtotime($seminar['end_time'])); ?></td>
-                      <td>
-                        <a href="./admin_seminar_view.php?id=<?php echo $seminar['seminar_id']; ?>" class="btn btn-sm btn-info">
-                          <i class="fas fa-eye"></i>
-                        </a>
-                      </td>
                     </tr>
                   <?php endforeach; ?>
                 </tbody>
@@ -168,7 +156,7 @@ try {
       </div>
     <?php endif; ?>
   </div>
-  
+  <?php include '../layouts/footer.php'; ?>
   <!-- Bootstrap JS và jQuery -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>

@@ -188,9 +188,6 @@ try {
                   ?>
                 </td>
                 <td>
-                  <a href="./admin_location_view.php?id=<?php echo $location['location_id']; ?>" class="btn btn-sm btn-info" title="Xem chi tiết">
-                    <i class="fas fa-eye"></i>
-                  </a>
                   <a href="./admin_location_edit.php?id=<?php echo $location['location_id']; ?>" class="btn btn-sm btn-warning" title="Chỉnh sửa">
                     <i class="fas fa-edit"></i>
                   </a>
