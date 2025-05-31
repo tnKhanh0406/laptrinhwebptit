@@ -14,11 +14,6 @@ $location = null;
 
 $targetDir = "../assets/images/";
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
-  header('Location: ./admin_locations.php');
-  exit;
-}
-
 $locationId = (int)$_GET['id'];
 
 try {
