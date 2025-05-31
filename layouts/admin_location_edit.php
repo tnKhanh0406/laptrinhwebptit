@@ -16,20 +16,15 @@ $targetDir = "../assets/images/";
 
 $locationId = (int)$_GET['id'];
 
-try {
-  $stmt = $conn->prepare("SELECT * FROM locations WHERE location_id = :location_id");
-  $stmt->bindParam(':location_id', $locationId, PDO::PARAM_INT);
-  $stmt->execute();
+$stmt = $conn->prepare("SELECT * FROM locations WHERE location_id = :location_id");
+$stmt->bindParam(':location_id', $locationId, PDO::PARAM_INT);
+$stmt->execute();
 
-  $location = $stmt->fetch(PDO::FETCH_ASSOC);
+$location = $stmt->fetch(PDO::FETCH_ASSOC);
 
-  if (!$location) {
-    header('Location: ./admin_locations.php');
-    exit;
-  }
-} catch (PDOException $e) {
-  $message = "Lỗi khi lấy thông tin địa điểm: " . $e->getMessage();
-  $messageType = "danger";
+if (!$location) {
+  header('Location: ./admin_locations.php');
+  exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
