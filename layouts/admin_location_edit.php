@@ -22,11 +22,6 @@ $stmt->execute();
 
 $location = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$location) {
-  header('Location: ./admin_locations.php');
-  exit;
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $name = trim($_POST['name'] ?? '');
   $address = trim($_POST['address'] ?? '');
@@ -67,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($validMime) {
       $newname = uniqid() . '.' . $ext;
       $photoPath = $targetDir . $newname;
-
       $photoName = $newname;
     } else {
       $errors[] = "Lỗi: Có vấn đề với định dạng file. Tải lên bị hủy. (MIME: $filetype)";
@@ -106,8 +100,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $location['name'] = $name;
     $location['address'] = $address;
     $location['photo'] = $photoName;
-
-    header('refresh:1.5;url=./admin_locations.php');
   } else {
     $message = implode("<br>", $errors);
     $messageType = "danger";
