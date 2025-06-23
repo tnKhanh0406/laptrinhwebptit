@@ -72,6 +72,7 @@
                  l.name as location_name 
           FROM seminars s
           LEFT JOIN locations l ON s.location_id = l.location_id
+          WHERE s.status = 1
           ORDER BY s.start_time DESC
           LIMIT 9
         ");
