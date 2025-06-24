@@ -2,7 +2,7 @@
 <div class="sidebar">
   <div class="nav-title">Admin Menu</div>
   <a href="../index.php"><i class="fa-solid fa-house"></i> Trang chủ</a>
-  <a href="../../Bai032/layouts/admin.php"><i class="fa-solid fa-user-tie"></i> Trang chủ quản lý</a>
+  <a href="../layouts/admin.php"><i class="fa-solid fa-user-tie"></i> Trang chủ quản lý</a>
   <a href="./admin_users.php"><i class="fas fa-users me-2"></i> Quản lý người dùng</a>
   <a href="./admin_seminars.php"><i class="fas fa-chalkboard-teacher me-2"></i> Quản lý hội thảo</a>
   <a href="./admin_speakers.php"><i class="fas fa-microphone me-2"></i> Quản lý diễn giả</a>

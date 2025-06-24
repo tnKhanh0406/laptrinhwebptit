@@ -32,22 +32,22 @@ if (isset($_SESSION['user_id'])) {
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-          <a class="nav-link" href="../../Bai032/index.php">Trang chủ</a>
+          <a class="nav-link" href="../index.php">Trang chủ</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../../Bai032/layouts/about.php">Giới thiệu</a>
+          <a class="nav-link" href="../layouts/about.php">Giới thiệu</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../../Bai032/layouts/locations.php">Địa điểm</a>
+          <a class="nav-link" href="../layouts/locations.php">Địa điểm</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../../Bai032/layouts/speakers.php">Diễn giả</a>
+          <a class="nav-link" href="../layouts/speakers.php">Diễn giả</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../../Bai032/layouts/seminars.php">Hội thảo</a>
+          <a class="nav-link" href="../layouts/seminars.php">Hội thảo</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../../Bai032/layouts/contact.php">Liên hệ</a>
+          <a class="nav-link" href="../layouts/contact.php">Liên hệ</a>
         </li>
 
         <?php if (isset($_SESSION['user_id'])): ?>
@@ -61,24 +61,24 @@ if (isset($_SESSION['user_id'])) {
               </a>
 
               <?php if ($_SESSION['role'] == 'admin'): ?>
-                <a class="dropdown-item" href="../../Bai032/layouts/admin.php">
+                <a class="dropdown-item" href="../layouts/admin.php">
                   <i class="fas fa-cog mr-2"></i> Quản lý
                 </a>
               <?php endif; ?>
-              <a class="dropdown-item" href="../../Bai032/layouts/my_seminars.php">
+              <a class="dropdown-item" href="../layouts/my_seminars.php">
                 <i class="fas fa-user-edit mr-2"></i> Hội thảo của tôi
               </a>
-              <a class="dropdown-item" href="../../Bai032/layouts/my_registrations.php">
+              <a class="dropdown-item" href="../layouts/my_registrations.php">
                 <i class="fas fa-list-alt mr-2"></i> Đăng ký của tôi
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item text-danger" href="../../Bai032/layouts/logout.php">
+              <a class="dropdown-item text-danger" href="../layouts/logout.php">
                 <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
               </a>
             </div>
           </li>
         <?php else: ?>
           <li class="nav-item">
-            <a class="nav-link" href="../../Bai032/layouts/login.php">
+            <a class="nav-link" href="../layouts/login.php">
               <i class="fas fa-sign-in-alt mr-1"></i> Đăng nhập
             </a>
           </li>
